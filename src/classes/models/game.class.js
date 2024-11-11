@@ -1,6 +1,6 @@
 import { config } from '../../config/config.js';
 import { GameState, initialState } from '../../utils/packet/gamePacket.js';
-import { findHighScoreByUserId } from '../../db/user/user.db.js';
+import { findHighScoreByUserId, updateHighScore } from '../../db/user/user.db.js';
 import {
   gameStartNotification,
   gameOverNotification,
@@ -200,6 +200,17 @@ class Game {
   changeMonsterType() {
     if(this.monsterType < 5)
       this.monsterType += 1;
+  }
+
+  async updateScore(user, opponentUser) {
+    if (user.score > (await findHighScoreByUserId(user.id))) {
+      await updateHighScore(user.score, user.id);
+      console.log(await findHighScoreByUserId(user.id));
+    }
+    if (opponentUser.score > (await findHighScoreByUserId(opponentUser.id))) {
+      await updateHighScore(opponentUser.score, opponentUser.id);
+      console.log(await findHighScoreByUserId(opponentUser.id));
+    }
   }
 }
 
